@@ -1,74 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>JS + CSS Clock</title>
-</head>
-<body>
-
-
+  <head>
+    <meta charset="UTF-8" />
+    <title>JS + CSS Clock</title>
+  </head>
+  <body>
+    <div class="desc">
+      <h5>오늘은 어떤 하루인가요?</h5>
+      <h3 class="date">2022년 1월 2일</h3>
+      <h1 class="time">오후 1시 55분</h1>
+    </div>
     <div class="clock">
       <div class="clock-face">
         <div class="hand hour-hand"></div>
         <div class="hand min-hand"></div>
         <div class="hand second-hand"></div>
+        <div class="pin">🎄</div>
       </div>
     </div>
 
+    <style>
+      html {
+        /* background: #018DED url(https://unsplash.it/1500/1000?image=881&blur=5); */
+        background: url(./winter_market.jpg) center center;
+        background-size: cover;
+        font-family: "helvetica neue";
+        text-align: center;
+        font-size: 10px;
+      }
 
-  <style>
-    html {
-      background: #018DED url(https://unsplash.it/1500/1000?image=881&blur=5);
-      background-size: cover;
-      font-family: 'helvetica neue';
-      text-align: center;
-      font-size: 10px;
-    }
+      body {
+        margin: 0;
+        font-size: 2rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 100vh;
+        align-items: center;
+      }
 
-    body {
-      margin: 0;
-      font-size: 2rem;
-      display: flex;
-      flex: 1;
-      min-height: 100vh;
-      align-items: center;
-    }
+      h1 {
+        margin-top: 0px;
+        margin-bottom: -20px;
+      }
+      h3 {
+        margin-bottom: 0px;
+      }
+      h5 {
+        margin: 20px;
+      }
+      .desc {
+        color: white;
+        font-size: 1.5rem;
+      }
+      .clock {
+        width: 30rem;
+        height: 30rem;
+        border: 10px solid antiquewhite;
+        border-radius: 50%;
+        margin: 50px auto;
+        position: relative;
+        padding: 2rem;
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.397),
+          inset 0 0 0 3px #efefef, inset 0 0 10px black,
+          0 0 10px rgba(0, 0, 0, 0.2);
+      }
 
-    .clock {
-      width: 30rem;
-      height: 30rem;
-      border: 20px solid white;
-      border-radius: 50%;
-      margin: 50px auto;
-      position: relative;
-      padding: 2rem;
-      box-shadow:
-        0 0 0 4px rgba(0,0,0,0.1),
-        inset 0 0 0 3px #EFEFEF,
-        inset 0 0 10px black,
-        0 0 10px rgba(0,0,0,0.2);
-    }
+      .clock-face {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform: translateY(
+          -3px
+        ); /* account for the height of the clock hands */
+      }
 
-    .clock-face {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform: translateY(-3px); /* account for the height of the clock hands */
-    }
+      .hand {
+        width: 50%;
+        height: 6px;
+        background: white;
+        position: absolute;
+        top: 50%;
+      }
+      .pin {
+        width: 10%;
+        height: 10%;
+        position: absolute;
+        top: 43%;
+        left: 43%;
+        font-size: 3rem;
+      }
+      .hour-hand {
+        background-color: crimson;
+      }
+      .min-hand {
+        background-color: green;
+      }
+      .sec-hand {
+        background-color: blanchedalmond;
+      }
+    </style>
 
-    .hand {
-      width: 50%;
-      height: 6px;
-      background: black;
-      position: absolute;
-      top: 50%;
-    }
+    <script>
+      const hands = Array.from(document.querySelectorAll(".hand"));
+      const date = document.querySelector(".date");
+      const time = document.querySelector(".time");
 
-  </style>
+      function updateDate() {
+        const day = new Date();
+        const today = {
+          year: day.getFullYear(),
+          month: day.getMonth() + 1,
+          day: day.getDate(),
+          isPM: day.getHours() >= 12 ? true : false,
+          hour: day.getHours() >= 12 ? day.getHours() - 12 : day.getHours(),
+          minute: day.getMinutes(),
+          second: day.getSeconds(),
+        };
+        console.log(today);
 
-  <script>
+        date.textContent = `${today.year}년 ${today.month}월 ${today.day}일`;
+        time.textContent = `${today.isPM ? "오후" : "오전"} ${today.hour}시 ${
+          today.minute
+        }분`;
+        const computeTime = [
+          today.hour * 15 + 90,
+          today.minute * 6 + 90,
+          today.second * 6 + 90,
+        ];
+        hands.forEach((hand) => {
+          hand.style.transformOrigin = `top right`;
+        });
+        for (let i = 0; i < 3; i++) {
+          hands[i].style.transform = `rotate(${computeTime[i]}deg)`;
+        }
+      }
 
-
-  </script>
-</body>
+      setInterval(() => {
+        updateDate();
+      }, 1000);
+    </script>
+  </body>
 </html>
