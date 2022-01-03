@@ -2,7 +2,7 @@ const btns = Array.from(document.querySelectorAll("button"));
 const leftTime = document.querySelector(".display__time-left");
 const finTime = document.querySelector(".display__end-time");
 const myform = document.querySelector("#custom");
-let timer = 0;
+let mainTimer;
 
 function makeItTwoSpace(numberString) {
   if (Number(numberString) < 10) {
@@ -41,7 +41,6 @@ function getTimeLeap(curTime, secondsToAdd) {
       leapedTime.hour -= 12;
     }
   }
-  console.log(leapedTime);
   return leapedTime;
 }
 
@@ -59,17 +58,43 @@ function changeLeftTime(secondsToAdd) {
     leapedTime.minute
   )} ${leapedTime.isPM ? "PM" : "AM"}`;
 }
+
+function secondsToHMS(seconds) {
+  const HMS = {
+    hour: Math.floor(seconds / 3600),
+    minute: Math.floor((seconds % 3600) / 60),
+    second: seconds % 60,
+  };
+  return HMS;
+}
+
+function changeTimer(seconds) {
+  let leftSeconds = seconds;
+  mainTimer = setInterval(() => {
+    const HMSTime = secondsToHMS(leftSeconds);
+    leftTime.textContent = `
+    ${HMSTime.hour == 0 ? "" : makeItTwoSpace(HMSTime.hour)}${
+      HMSTime.hour == 0 ? "" : ":"
+    }${makeItTwoSpace(HMSTime.minute)}:${makeItTwoSpace(HMSTime.second)}`;
+    leftSeconds--;
+    if (leftSeconds < 0) clearInterval(mainTimer);
+  }, 1000);
+}
 setCurTime();
 
 btns.forEach((button) => {
   button.addEventListener("click", () => {
+    clearInterval(mainTimer);
     const secondsToAdd = button.dataset.time;
     changeLeftTime(secondsToAdd);
+    changeTimer(secondsToAdd);
   });
 });
 
 myform.addEventListener("submit", (e) => {
   e.preventDefault();
+  clearInterval(mainTimer);
   const minToAdd = parseFloat(myform.querySelector("input").value);
   changeLeftTime(minToAdd * 60);
+  changeTimer(minToAdd * 60);
 });
